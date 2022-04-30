@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 class Game extends StatefulWidget {
@@ -7,12 +9,53 @@ class Game extends StatefulWidget {
   State<Game> createState() => _GameState();
 }
 
+enum Result {
+  victory,
+  defeat,
+  draw
+}
+
 class _GameState extends State<Game> {
   
   var _imageApp = AssetImage("images/padrao.png");
+  var _messageResult = "Escolha uma opção abaixo";
 
-  void onOptionSelected(String option) {
-    print("Option selected: $option");
+  void onOptionSelected(String optionSelected) {
+    print("Option selected: $optionSelected");
+    final options = ["pedra", "papel", "tesoura"];
+    final index = Random().nextInt(options.length);
+    final optionApp = options[index];
+    print("Option app: $optionApp");
+
+    final result = validateUserWin(optionSelected, optionApp);
+    final message = getMessageByResult(result);
+
+    setState(() {
+      _messageResult = message;
+      _imageApp = AssetImage("images/$optionApp.png", );
+    });
+  }
+
+  String getMessageByResult(Result result) {
+    switch(result){
+      case Result.victory:
+        return "Parabéns!!! você ganhou :)";
+      case Result.defeat:
+        return "Você perdeu :(";
+      case Result.draw:
+        return "Empatamos ;)";
+    }
+  }
+
+  Result validateUserWin(String optionSelected, String optionApp) {
+    if (optionSelected == optionApp) {
+      return Result.draw;
+    } else {
+      final isUserWin = (optionSelected == "pedra" && optionApp == "tesoura") ||
+          (optionSelected == "tesoura" && optionApp == "papel") ||
+          (optionSelected == "papel" && optionApp == "pedra");
+      return isUserWin ? Result.victory : Result.defeat;
+    }
   }
 
   @override
@@ -21,11 +64,11 @@ class _GameState extends State<Game> {
       appBar: AppBar(
           title: const Text("Jokenpo")
       ),
-      body: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
+      body: SizedBox(
+        /*decoration: BoxDecoration(
             border: Border.all(width: 3, color: Colors.yellow)
-        ),
+        ),*/
+        width: double.infinity,
         child: Column(
           children: <Widget>[
             const Padding(
@@ -40,12 +83,12 @@ class _GameState extends State<Game> {
                ),
              ),
             Image(image: _imageApp,),
-            const  Padding(
+              Padding(
               padding: EdgeInsets.only(top: 32, bottom: 16),
               child: Text(
-                "Escolha uma opção abaixo",
+                _messageResult,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold
                 ),
