@@ -15,27 +15,40 @@ enum Result {
   draw
 }
 
+enum Option {
+  pedra,
+  papel,
+  tesoura
+}
+
 class _GameState extends State<Game> {
   
   var _imageApp = AssetImage("images/padrao.png");
   var _messageResult = "Escolha uma opção abaixo";
+  var _colorPedra = Colors.transparent;
+  var _colorPapel = Colors.transparent;
+  var _colorTesoura= Colors.transparent;
 
-  void onOptionSelected(String optionSelected) {
+  void onOptionSelected(Option optionSelected) {
     print("Option selected: $optionSelected");
-    final options = ["pedra", "papel", "tesoura"];
-    final index = Random().nextInt(options.length);
-    final optionApp = options[index];
+    final index = Random().nextInt(Option.values.length);
+    final optionApp = Option.values[index];
     print("Option app: $optionApp");
 
     final result = validateUserWin(optionSelected, optionApp);
     final message = getMessageByResult(result);
 
     setState(() {
+      _colorPedra = getColorByOption(optionSelected, Option.pedra);
+      _colorPapel = getColorByOption(optionSelected, Option.papel);
+      _colorTesoura = getColorByOption(optionSelected, Option.tesoura);
       _messageResult = message;
-      _imageApp = AssetImage("images/$optionApp.png", );
+      _imageApp = AssetImage("images/${optionApp.name}.png");
     });
   }
-
+Color getColorByOption(Option optionSelected, Option option) {
+    return optionSelected == option ? Colors.blue : Colors.transparent;
+}
   String getMessageByResult(Result result) {
     switch(result){
       case Result.victory:
@@ -47,13 +60,13 @@ class _GameState extends State<Game> {
     }
   }
 
-  Result validateUserWin(String optionSelected, String optionApp) {
+  Result validateUserWin(Option optionSelected, Option optionApp) {
     if (optionSelected == optionApp) {
       return Result.draw;
     } else {
-      final isUserWin = (optionSelected == "pedra" && optionApp == "tesoura") ||
-          (optionSelected == "tesoura" && optionApp == "papel") ||
-          (optionSelected == "papel" && optionApp == "pedra");
+      final isUserWin = (optionSelected == Option.pedra && optionApp == Option.tesoura) ||
+          (optionSelected == Option.tesoura && optionApp == Option.papel) ||
+          (optionSelected == Option.papel && optionApp == Option.pedra);
       return isUserWin ? Result.victory : Result.defeat;
     }
   }
@@ -82,9 +95,9 @@ class _GameState extends State<Game> {
                  ),
                ),
              ),
-            Image(image: _imageApp,),
+            Image(image: _imageApp),
               Padding(
-              padding: EdgeInsets.only(top: 32, bottom: 16),
+              padding: const EdgeInsets.only(top: 32, bottom: 16),
               child: Text(
                 _messageResult,
                 textAlign: TextAlign.center,
@@ -98,16 +111,43 @@ class _GameState extends State<Game> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 GestureDetector(
-                  onTap: () => onOptionSelected("pedra"),
-                  child: Image.asset("images/pedra.png", height: 100,)
+                  onTap: () => onOptionSelected(Option.pedra),
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundColor: _colorPedra,
+                      child: Padding(
+                        padding: const EdgeInsets.all(4), // Border radius
+                        child: ClipOval(
+                            child: Image.asset("images/pedra.png",)
+                        ),
+                      ),
+                    )
                 ),
                 GestureDetector(
-                    onTap: () => onOptionSelected("papel"),
-                    child: Image.asset("images/papel.png", height: 100)
+                    onTap: () => onOptionSelected(Option.papel),
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundColor: _colorPapel,
+                      child: Padding(
+                        padding: const EdgeInsets.all(4), // Border radius
+                        child: ClipOval(
+                            child: Image.asset("images/papel.png",)
+                        ),
+                      ),
+                    )
                 ),
                 GestureDetector(
-                    onTap: () => onOptionSelected("tesoura"),
-                    child: Image.asset("images/tesoura.png", height: 100)
+                    onTap: () => onOptionSelected(Option.tesoura),
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundColor: _colorTesoura,
+                      child: Padding(
+                        padding: const EdgeInsets.all(4), // Border radius
+                        child: ClipOval(
+                            child: Image.asset("images/tesoura.png",)
+                        ),
+                      ),
+                    )
                 )
               ],
             )
