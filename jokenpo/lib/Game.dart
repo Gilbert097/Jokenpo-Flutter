@@ -1,6 +1,7 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
+import 'Option.dart';
+import 'Result.dart';
 
 class Game extends StatefulWidget {
   const Game({Key? key}) : super(key: key);
@@ -9,27 +10,16 @@ class Game extends StatefulWidget {
   State<Game> createState() => _GameState();
 }
 
-enum Result {
-  victory,
-  defeat,
-  draw
-}
-
-enum Option {
-  pedra,
-  papel,
-  tesoura
-}
-
 class _GameState extends State<Game> {
   
-  var _imageApp = AssetImage("images/padrao.png");
+  var _imageApp = const AssetImage("images/padrao.png");
   var _messageResult = "Escolha uma opção abaixo";
   var _colorPedra = Colors.transparent;
   var _colorPapel = Colors.transparent;
   var _colorTesoura= Colors.transparent;
 
   void onOptionSelected(Option optionSelected) {
+
     print("Option selected: $optionSelected");
     final index = Random().nextInt(Option.values.length);
     final optionApp = Option.values[index];
@@ -46,9 +36,11 @@ class _GameState extends State<Game> {
       _imageApp = AssetImage("images/${optionApp.name}.png");
     });
   }
-Color getColorByOption(Option optionSelected, Option option) {
-    return optionSelected == option ? Colors.blue : Colors.transparent;
-}
+
+  Color getColorByOption(Option optionSelected, Option option) {
+      return optionSelected == option ? Colors.blue : Colors.transparent;
+  }
+
   String getMessageByResult(Result result) {
     switch(result){
       case Result.victory:
